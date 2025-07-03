@@ -38,7 +38,23 @@ const listingschema=new mongoose.Schema({
     owner:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User",
+    },
+    tags:{
+        type:String,
+        default:"Trending"
+    },
+    geometry:{
+        type:{
+            type:String,
+            enum:["Point"],
+            required:true
+        },
+        coordinates:{
+            type:[Number],//latitude and longitude
+            required:true
+        }
     }
+
 });
 listingschema.post("findOneAndDelete",async(listingdata)=>{
     if(listingdata){

@@ -1,0 +1,35 @@
+<% layout("/layouts/boilerplate")%>
+<body>
+    <style>
+        .searchlistings{
+            margin-top: 3rem;
+            margin-left: 2rem;
+            margin-right: 2rem;
+        }
+    </style>
+
+    </div>
+    <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 searchlistings">
+        <%for(let l of searchlistings){%>
+            <a href="/listings/<%=l._id%>" class="listing-c">
+                <div class="card col listing-card">
+                    <img src="<%=l.image.url%>" class="card-img-top" alt="Listing_Image" style="height: 20rem;">
+                    <div class="card-img-overlay"></div>
+                    <div class="card-body">
+                      <p class="card-text"><b><%=l.title%></b></p>
+                      <p class="card-text"> &#8377;<%=l.price.toLocaleString("en-IN")%> / night</p>
+                      
+                    </div>
+                </div>
+
+            </a>
+            
+    
+        <%}%>
+
+    </div>
+
+    
+    
+</body>
+<!-- adding functionality /event listener for tax -->

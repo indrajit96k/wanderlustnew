@@ -1,0 +1,126 @@
+<% layout("/layouts/boilerplate")%>
+<body>
+
+<div class="container my-4">
+
+  <h3 class="mb-4 text-center"><%= indvidual.title %></h3>
+
+  <div class="card mb-4 mx-auto" style="max-width: 700px;">
+    <img src="<%= indvidual.image.url %>" alt="Listing_Image" class="card-img-top" style="height: 20rem; object-fit: cover;">
+    <div class="card-body">
+      <p><strong>Owned By:</strong> <%= indvidual.owner.username %></p>
+      <p><strong>Description:</strong> <%= indvidual.description %></p>
+      <p><strong>Price:</strong> &#8377;<%= indvidual.price.toLocaleString("en-IN") %> / night</p>
+      <p><strong>Location:</strong> <%= indvidual.location %></p>
+      <p><strong>Country:</strong> <%= indvidual.country %></p>
+    </div>
+  </div>
+
+  <% if(curruser && curruser._id.equals(indvidual.owner._id)) { %>
+    <div class="text-center mb-4">
+      <a href="/listings/<%= indvidual._id %>/edit" class="btn btn-success me-2">Edit Listing</a>
+      <form method="post" action="/listings/<%= indvidual._id %>?_method=DELETE" style="display:inline;">
+        <button class="btn btn-danger">Delete Listing</button>
+      </form>
+    </div>
+  <% } else if(curruser) { %>
+    <form action="/listings/<%= indvidual._id %>/contact" method="get" class="row g-2 mb-4 justify-content-center" style="max-width:700px;">
+      <div class="col-5">
+        <input type="datetime-local" name="bookingdt" class="form-control" required>
+      </div>
+      <div class="col-5">
+        <input type="datetime-local" name="leavedt" class="form-control" required>
+      </div>
+      <div class="col-2 d-grid">
+        <button type="submit" class="btn btn-dark">Contact Owner</button>
+      </div>
+    </form>
+  <% } %>
+
+  <% if(curruser) { %>
+    <div class="card mb-4 mx-auto" style="max-width: 700px;">
+      <div class="card-body">
+        <h4>Leave a Review</h4>
+        <form action="/listings/<%= indvidual._id %>/reviews" method="post" class="needs-validation" novalidate>
+          <div class="mb-3">
+            <label class="form-label">Rating</label>
+            <fieldset class="starability-slot d-flex gap-2 flex-wrap">
+              <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." hidden />
+              <input type="radio" id="rate1" name="review[rating]" value="1" />
+              <label for="rate1" title="Terrible">1 star</label>
+              <input type="radio" id="rate2" name="review[rating]" value="2" />
+              <label for="rate2" title="Not good">2 stars</label>
+              <input type="radio" id="rate3" name="review[rating]" value="3" />
+              <label for="rate3" title="Average">3 stars</label>
+              <input type="radio" id="rate4" name="review[rating]" value="4" />
+              <label for="rate4" title="Very good">4 stars</label>
+              <input type="radio" id="rate5" name="review[rating]" value="5" />
+              <label for="rate5" title="Amazing">5 stars</label>
+            </fieldset>
+          </div>
+
+          <div class="mb-3">
+            <label for="comment" class="form-label">Comments</label>
+            <textarea id="comment" name="review[comment]" rows="4" class="form-control" placeholder="Enter Comment" required></textarea>
+            <div class="invalid-feedback">Review Field cannot be empty</div>
+          </div>
+
+          <button type="submit" class="btn btn-outline-dark">Submit</button>
+        </form>
+      </div>
+    </div>
+  <% } %>
+
+  <hr>
+
+  <% if(indvidual.reviews.length > 0) { %>
+    <div class="mx-auto" style="max-width:700px;">
+      <h5>All Reviews</h5>
+      <div class="row row-cols-1 row-cols-md-2 g-3">
+        <% for(let review of indvidual.reviews) { %>
+          <div class="col">
+            <div class="card h-100">
+              <div class="card-body">
+                <h6 class="card-title mb-2"><%= review.author.username %></h6>
+                <p class="starability-result mb-2" data-rating="<%= review.rating %>"></p>
+                <p class="card-text"><%= review.comment %></p>
+                <% if(curruser && curruser._id.equals(review.author._id)) { %>
+                  <form action="/listings/<%= indvidual._id %>/reviews/<%= review._id %>?_method=DELETE" method="post" class="mt-2">
+                    <button class="btn btn-sm btn-danger">Delete</button>
+                  </form>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  <% } %>
+
+  <div class="mx-auto" style="max-width: 700px;">
+    <h3 class="mt-4 mb-3">Where you'll be</h3>
+    <% if (indvidual.geometry && indvidual.geometry.coordinates) { %>
+      <div id="map" style="height: 400px; width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"></div>
+
+      <script>
+        const lat = <%- JSON.stringify(indvidual.geometry.coordinates[1]) %>;
+        const lng = <%- JSON.stringify(indvidual.geometry.coordinates[0]) %>;
+
+        const map = L.map('map').setView([lat, lng], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        L.marker([lat, lng]).addTo(map)
+          .bindPopup("<%= indvidual.title %>")
+          .openPopup();
+      </script>
+    <% } else { %>
+      <p><strong>No map available for this listing.</strong></p>
+    <% } %>
+  </div>
+
+</div>
+
+</body>

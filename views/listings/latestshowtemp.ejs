@@ -1,14 +1,11 @@
 <style>
-    .reviewcard {
+    /* .reviewcards{
         display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        margin-bottom: 1rem;
-    }
+        flex-direction: column;
 
+    } */
 </style>
-
-<% layout("/layouts/boilerplate.ejs")%>
+<% layout("/layouts/boilerplate")%>
 <body>
 
     <div class="row">
@@ -27,16 +24,26 @@
                   <p class="card-text"><b>Country:</b> <%=indvidual.country%></p>
                 </div>
             </div>
-            <%if(curruser && !(curruser._id.equals(indvidual.owner._id))){%>
+            <% if(curruser && curruser._id.equals(indvidual.owner._id)) {%>
+
+                <div class="btnss">
+                <a href="/listings/<%=indvidual._id%>/edit" class="btn btn-success">Edit Listing</a>
+                <form method="post" action="/listings/<%=indvidual._id%>?_method=DELETE">
+                    <button class="btn btn-dark">Delete Listing</button>
+                </form>
+                <br>
+
+                </div>
+            <%} else if(curruser){%>
             
                 <form method="get" action="/listings/<%=indvidual._id%>/contact">
                     <div class="row mb-3">
                         <div class="col-md-3">
-                            <label for="book" class="mb-1">Check-in Date and Time</label>
+                            <label for="book" class="mb-1">Select booking Date and Time</label>
                             <input type="datetime-local" name="bookingdt" class="form-control" id="book">
                         </div>
                         <div class="col-md-3">
-                            <label for="leave" class="mb-1">Check-out Date and Time</label>
+                            <label for="leave" class="mb-1">Select leaving Date and Time</label>
                             <input type="datetime-local" name="leavedt" class="form-control" id="leave">
 
                         </div>
@@ -47,44 +54,6 @@
                 </form>
                 
             <%} %>    
-            <% if(curruser && (curruser._id.equals(indvidual.owner._id))) {%>
-
-                <div class="btnss">
-                <a href="/listings/<%=indvidual._id%>/edit" class="btn btn-success">Edit Listing</a>
-                <form method="post" action="/listings/<%=indvidual._id%>?_method=DELETE">
-                    <button class="btn btn-dark">Delete Listing</button>
-                </form>
-                <br>
-
-                </div>
-            <%} %>    
-            <div class="col-6 mt-3">
-                <h3>Where you'll be</h3>
-                    <% if (indvidual.geometry && indvidual.geometry.coordinates) { %>
-                    <div id="map" style="height: 400px; width: 700px;"></div>
-                    <script>
-                        const lat = <%- JSON.stringify(indvidual.geometry.coordinates[1]) %>;
-                        const lng = <%- JSON.stringify(indvidual.geometry.coordinates[0]) %>;
-
-                        const map = L.map('map').setView([lat, lng], 13);
-
-                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '© OpenStreetMap contributors'
-                        }).addTo(map);
-
-                        L.marker([lat, lng]).addTo(map)
-                        .bindPopup("<%= indvidual.title %>")
-                        .openPopup();
-                    </script>
-                    <% } else { %>
-                    <p><strong>No map available for this listing.</strong></p>
-                    <% } %>
-
-                        
-                        
-            
-
-            </div>
         
             <% if(curruser) {%> 
              <!-- if user is logged in then only he ca post comment -->
@@ -123,10 +92,10 @@
                 <%}%>
                 <hr>
                 <%if(indvidual.reviews.length>0) {%>
-                <div class="row reviewcard">
+                <div class="row">
                     <p><b>All Reviews</b></p>
                     <% for(review of indvidual.reviews) { %>
-                        <div class="card col-md-4">
+                        <div class="card col-5 mb-3 ms-3">
                             <div class="card-body reviewcards">
                                     <h5 class="card-title"><%= review.author.username %></h5>
                                     
@@ -148,8 +117,34 @@
                 <% }%>
          
             </div>
-    </div>
+            <div class="col-8 mb-3">
+                <h3>Where you'll be</h3>
+            <% if (indvidual.geometry && indvidual.geometry.coordinates) { %>
+            <div id="map" style="height: 400px; width: 700px;"></div>
+            <script>
+                const lat = <%- JSON.stringify(indvidual.geometry.coordinates[1]) %>;
+                const lng = <%- JSON.stringify(indvidual.geometry.coordinates[0]) %>;
 
+                const map = L.map('map').setView([lat, lng], 13);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+
+                L.marker([lat, lng]).addTo(map)
+                .bindPopup("<%= indvidual.title %>")
+                .openPopup();
+            </script>
+            <% } else { %>
+            <p><strong>No map available for this listing.</strong></p>
+            <% } %>
+
+                        
+                        
+            
+
+        </div>
+    </div>
 
     
 </body>

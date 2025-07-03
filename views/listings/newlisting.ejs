@@ -26,31 +26,49 @@
                     <input type="file" name="listing[image]" class="form-control" required>
 
                 </div>
-                
-                <div>
-                    <label for="price" class="form-label">Price</label>
-                    <input type="number" name="price" placeholder="Enter Price" class="form-control" required>
-                    <div class="invalid-feedback">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="price" class="form-label">Price</label>
+                        <input type="number" name="price" placeholder="Enter Price" class="form-control" required>
+                        <div class="invalid-feedback">
                         Please Add Price
+                        </div>
                     </div>
 
+                    <div class="col-md-6">
+                            <label for="tags" class="form-label">Category</label>
+                            <select name="tags" class="form-control" required>
+                                <option value="trending">Trending</option>
+                                <option value="rooms">Rooms</option>
+                                <option value="mountains">Mountains</option>
+                                <option value="castles">Castles</option>
+                                <option value="camping">Camping</option>
+                                <option value="farms">Farms</option>
+                                <option value="arctic">Arctic</option>
+                                <option value="iconiccities">Iconic Cities</option>
+                            </select>
+                    </div>
                 </div>
                 <div>
-                    <label for="location" class="form-label">Location</label>
-                    <input type="text" name="location" placeholder="Enter location" class="form-control" required>
-                    <div class="invalid-feedback">
-                        Please Add Location
-                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" name="location" placeholder="Enter location" class="form-control" required>
+                        <div class="invalid-feedback">
+                            Please Add Location
+                        </div>
 
-                </div>
-                
-                <div>
-                    <label for="country" class="form-label">Country</label>
-                    <input type="text" name="country" placeholder="Enter country" class="form-control" required>
-                    <div class="invalid-feedback">
-                        Please Add Country
+                    </div>
+                    <div class="col-md-6">
+                        <label for="country" class="form-label">Country</label>
+                        <input type="text" name="country" placeholder="Enter country" class="form-control" required>
+                        <div class="invalid-feedback">
+                            Please Add Country
+                        </div>
                     </div>
                 </div>
+
                 <br>
                 <button class="btn btn-dark">Submit</button>
                 <br>

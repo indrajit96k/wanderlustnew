@@ -36,8 +36,8 @@
 
         </div>
         <div class="navbar-nav ms-auto">
-          <form class="d-flex" role="search">
-            <input class="form-control me-2 search-input" type="search" placeholder="Search Destinations" aria-label="Search"/>
+          <form class="d-flex" role="search" method="get" action="/searchresults">
+            <input class="form-control me-2 search-input" type="search" placeholder="Search Destinations" aria-label="Search" name="destinations"/>
             <button class="btn btn-search" type="submit"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
           </form>
         </div>
@@ -45,7 +45,7 @@
           <a class="nav-link" href="/listings/new">Add new Listings</a>
           <% if(!curruser) { %>
             <a class="nav-link" href="/signup">Sign up</a>
-            <a class="nav-link" href="/login">Login</a>
+            <a class="nav-link"  href="/login">Login</a>
 
           <% } %>
           <% if(curruser) { %>

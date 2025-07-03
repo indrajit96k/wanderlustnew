@@ -8,6 +8,9 @@ const multer=require("multer");
 const {storage}=require("../cloudconfig.js");
 const upload=multer({storage}); //for file upload
 const {isloggedin, isowner}=require("../middelware.js");
+const getCoordinates=require("../utils/geocoder.js");
+const { ContactOwner} = require("../utils/ownermessage.js");
+
 const validateListing=(req,res,next)=>{
         //use joi validation for schema 
     let {error}=listingschema.validate(req.body.listing);
@@ -39,16 +42,35 @@ router.get("/:id", WrapAsync(async(req,res)=>{
 router.post("/", isloggedin, upload.single('listing[image]'),validateListing, WrapAsync(async(req,res)=>{
     let url=req.file.path;
     let filename=req.file.filename;
+    const coordinates=await getCoordinates(req.body.location);
     // console.log(url,"...",filename);
     const newlisting = new Listing(req.body);
     newlisting.owner=req.user._id;
+    newlisting.geometry=coordinates;
     newlisting.image={url,filename};
     await newlisting.save();
     req.flash("success","New Listing Created!!!");
     res.redirect("/listings");
 
 }));
+router.get("/:id/contact",isloggedin,WrapAsync(async(req,res)=>{
+    let {bookingdt,leavedt}=req.query;
+    let {id}=req.params;
+    let ownerobject=await Listing.findById(id).populate("owner");
+    let owneremail=ownerobject.owner.email;
+    let curruseremail=req.user.email;
+    console.log(owneremail);
+    console.log(curruseremail);
+    console.log(bookingdt);
+    console.log(leavedt);
+    console.log(id);
+    await ContactOwner(bookingdt,leavedt,owneremail,curruseremail);
+    
 
+    req.flash("success","Done!!! Owner will contact you soon.....");
+
+    res.redirect(`/listings`);
+}));
 router.get("/:id/edit",isloggedin,isowner,WrapAsync(async(req,res)=>{
     let {id}=req.params;
     const list=await Listing.findById(id);

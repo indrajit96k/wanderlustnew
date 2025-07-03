@@ -4,13 +4,33 @@ const User=require("../models/user.js");
 const WrapAsync = require("../utils/wrapasync");
 const passport=require("passport");
 const { saveredirecturl } = require("../middelware.js");
+const otp=require("../utils/otp.js");
+const {OtpVerification } = require("../utils/ownermessage.js");
+
+
 router.get("/signup",(req,res)=>{
     res.render("users/signup.ejs");
 
 })
+router.get("/signup/verifyotp",async(req,res)=>{
+    let otpval=otp();
+    req.session.otpval=otpval;
+    let {email}=req.query;
+    console.log(otpval);
+    await OtpVerification(otpval,email);
+    res.json({ message: "OTP sent to email" });
+    // console.log("done");
+})
 router.post("/signup",WrapAsync(async (req,res)=>{
+    const {submittedotp,username,email,password}=req.body;
+    // console.log(typeof(submittedotp));
+    // console.log(typeof(req.session.otpval));
+    if(submittedotp!==String(req.session.otpval)){
+        req.flash("error","Otp was incorrect");
+        return res.redirect("/signup");
+    }
     try{
-        const {username,email,password}=req.body;
+
         let newuser =new User({email,username});
         const reguser=await User.register(newuser,password);
         //implementing auto login after signup

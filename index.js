@@ -29,7 +29,7 @@ const passport=require("passport");
 const localstrategy=require("passport-local");
 const User=require("./models/user.js");
 const { error } = require('console');
-const dburl=process.env.ATLASDB_URL;
+let dburl=process.env.ATLASDB_URL;
 main().then(()=>{
     console.log("Connected to Db");
 }).catch((err)=>{
@@ -42,19 +42,8 @@ async function main() {
 app.listen(8080,()=>{
     console.log("Server listenening");
 })
-const store=MongoStore.create({
-    mongoUrl:dburl,
-    crypto:{
-        secret:process.env.SECRET,
-    },
-    touchAfter:24*3600,
 
-});
-store.on("error",()=>{
-    console.log("error in mongo session store",error);
-})
 const sessionoptions={
-    store:store,
     secret:process.env.SECRET,
     resave:false,
     saveUninitialized:true,
@@ -65,9 +54,9 @@ const sessionoptions={
     }
 
 };
-// app.get("/",(req,res)=>{
-//     console.log("root");
-// });
+app.get("/",(req,res)=>{
+    res.redirect("/listings");
+});
 
 app.use(session(sessionoptions));
 app.use(flash());
@@ -86,6 +75,17 @@ app.use((req,res,next)=>{
 app.use("/",userroute);
 app.use("/listings",listingroute);
 app.use("/listings/:id/reviews",reviewroute);
+app.get("/searchresults",async(req,res)=>{
+    let {destinations}=req.query;
+    let searchlistings= await Listing.find({location:{$regex: destinations, $options: "i"}});
+    res.render("listings/searchresult.ejs",{searchlistings});
+})
+app.get("/filters",async(req,res)=>{
+    let {filter}=req.query;
+    // let filterlistings=await Listing.find({description:{$regex:filter,$options:"i"}});
+    let filterlistings=await Listing.find({tags:filter});
+    res.render("listings/filter.ejs",{filterlistings});
+})
 //for all request definging err handling middleware for page not found
 app.all("*",(req,res,next)=>{
     next(new ExpressError(404,"Page Not Found!"));
